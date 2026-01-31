@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Pondok Ramadhan SMAN 1 Babat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+        }
+
+        .tab-active {
+            color: #059669;
+            border-bottom: 3px solid #059669;
+        }
+
+        .day-tab-active {
+            background-color: #059669 !important;
+            color: white !important;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .schedule-line::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+
+        .download-item:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-24">
+
+    <!-- Header -->
+    <header class="bg-emerald-700 text-white p-6 rounded-b-[2.5rem] shadow-lg sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Pondok Ramadhan 1447 H</h1>
+                <p class="text-emerald-100 text-sm italic">SMA Negeri 1 Babat</p>
+            </div>
+            <div class="bg-white/20 p-2 rounded-full">
+                <i class="fas fa-mosque text-2xl"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Kontainer Utama -->
+    <main class="max-w-md mx-auto p-4 mt-2">
+        
+        <!-- Info Profil Ringkas -->
+        <div class="glass-card p-4 shadow-sm mb-6 border-l-4 border-emerald-500 flex items-center gap-4">
+            <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold">
+                S
+            </div>
+            <div class="flex-1">
+                <h2 id="display-name" class="font-bold text-gray-800 text-sm leading-tight">Nama Siswa</h2>
+                <p id="display-class" class="text-[10px] text-gray-500 italic">Kelas Belum Diatur</p>
+            </div>
+            <button onclick="toggleProfileModal()" class="text-gray-400 hover:text-emerald-600">
+                <i class="fas fa-user-edit"></i>
+            </button>
+        </div>
+
+        <!-- Menu Navigasi Utama -->
+        <div class="flex justify-around mb-6 bg-white rounded-xl shadow-sm p-2 overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('daily')" id="tab-daily" class="flex-1 py-2 text-[11px] font-semibold tab-active whitespace-nowrap px-2">
+                <i class="fas fa-tasks block mb-1 text-base"></i> Ibadah
+            </button>
+            <button onclick="switchTab('schedule')" id="tab-schedule" class="flex-1 py-2 text-[11px] font-semibold text-gray-400 whitespace-nowrap px-2">
+                <i class="fas fa-calendar-alt block mb-1 text-base"></i> Jadwal
+            </button>
+            <button onclick="switchTab('journal')" id="tab-journal" class="flex-1 py-2 text-[11px] font-semibold text-gray-400 whitespace-nowrap px-2">
+                <i class="fas fa-edit block mb-1 text-base"></i> Jurnal
+            </button>
+            <button onclick="switchTab('download')" id="tab-download" class="flex-1 py-2 text-[11px] font-semibold text-gray-400 whitespace-nowrap px-2">
+                <i class="fas fa-download block mb-1 text-base"></i> Unduh
+            </button>
+            <button onclick="switchTab('stats')" id="tab-stats" class="flex-1 py-2 text-[11px] font-semibold text-gray-400 whitespace-nowrap px-2">
+                <i class="fas fa-chart-line block mb-1 text-base"></i> Progres
+            </button>
+        </div>
+
+        <!-- Tab: Checklist Ibadah -->
+        <div id="content-daily" class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-gray-700">Checklist Harian</h3>
+                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold" id="current-date"></span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div onclick="toggleCheck('fajr')" id="check-fajr" class="glass-card p-4 flex items-center gap-3 cursor-pointer border-2 border-transparent">
+                    <i class="fas fa-sun text-orange-400"></i> <span class="text-sm font-medium">Subuh</span>
+                </div>
+                <div onclick="toggleCheck('dhuhr')" id="check-dhuhr" class="glass-card p-4 flex items-center gap-3 cursor-pointer border-2 border-transparent">
+                    <i class="fas fa-cloud-sun text-yellow-500"></i> <span class="text-sm font-medium">Dzuhur</span>
+                </div>
+                <div onclick="toggleCheck('asr')" id="check-asr" class="glass-card p-4 flex items-center gap-3 cursor-pointer border-2 border-transparent">
+                    <i class="fas fa-cloud-sun-reveal text-orange-600"></i> <span class="text-sm font-medium">Ashar</span>
+                </div>
+                <div onclick="toggleCheck('maghrib')" id="check-maghrib" class="glass-card p-4 flex items-center gap-3 cursor-pointer border-2 border-transparent">
+                    <i class="fas fa-moon text-indigo-400"></i> <span class="text-sm font-medium">Maghrib</span>
+                </div>
+                <div onclick="toggleCheck('isha')" id="check-isha" class="glass-card p-4 flex items-center gap-3 cursor-pointer border-2 border-transparent">
+                    <i class="fas fa-stars text-indigo-900"></i> <span class="text-sm font-medium">Isya'</span>
+                </div>
+                <div onclick="toggleCheck('tarawih')" id="check-tarawih" class="glass-card p-4 flex items-center gap-3 cursor-pointer border-2 border-transparent">
+                    <i class="fas fa-pray text-emerald-600"></i> <span class="text-sm font-medium">Tarawih</span>
+                </div>
+            </div>
+            <div class="glass-card p-4">
+                <label class="text-xs font-bold text-gray-500 block mb-2">TADARUS HARI INI</label>
+                <div class="flex gap-2">
+                    <input type="text" id="tadarus-input" placeholder="Misal: Al-Baqarah 1-5" class="flex-1 text-sm p-2 bg-gray-50 border rounded-lg outline-none">
+                    <button onclick="saveTadarus()" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold">Update</button>
+                </div>
+                <p id="tadarus-log" class="text-[10px] text-emerald-600 mt-2 italic"></p>
+            </div>
+        </div>
+
+        <!-- Tab: Jadwal Agenda -->
+        <div id="content-schedule" class="hidden space-y-4">
+            <h3 class="font-bold text-gray-700">Agenda Kegiatan</h3>
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                <button onclick="switchDaySchedule(1)" id="btn-day-1" class="day-tab-active bg-white px-4 py-2 rounded-full text-[10px] font-bold shadow-sm border whitespace-nowrap">Hari ke-1</button>
+                <button onclick="switchDaySchedule(2)" id="btn-day-2" class="bg-white px-4 py-2 rounded-full text-[10px] font-bold shadow-sm border whitespace-nowrap text-gray-400">Hari ke-2</button>
+                <button onclick="switchDaySchedule(3)" id="btn-day-3" class="bg-white px-4 py-2 rounded-full text-[10px] font-bold shadow-sm border whitespace-nowrap text-gray-400">Hari ke-3</button>
+            </div>
+            <div id="schedule-container" class="relative schedule-line space-y-6 pl-2 mt-4"></div>
+        </div>
+
+        <!-- Tab: Jurnal Materi -->
+        <div id="content-journal" class="hidden space-y-4">
+            <h3 class="font-bold text-gray-700">Tulis Ringkasan Materi</h3>
+            <div class="glass-card p-4 space-y-3">
+                <input type="text" id="materi-title" placeholder="Judul Kajian" class="w-full text-sm p-3 border rounded-xl bg-gray-50 outline-none">
+                <input type="text" id="materi-speaker" placeholder="Nama Ustadz/Pemateri" class="w-full text-sm p-3 border rounded-xl bg-gray-50 outline-none">
+                <textarea id="materi-notes" rows="3" placeholder="Poin-poin penting materi..." class="w-full text-sm p-3 border rounded-xl bg-gray-50 outline-none"></textarea>
+                <button onclick="saveJournalEntry()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold shadow-md">Simpan ke Buku Jurnal</button>
+            </div>
+            <div id="journal-list" class="space-y-3"></div>
+        </div>
+
+        <!-- Tab: Download Materi (NEW) -->
+        <div id="content-download" class="hidden space-y-4">
+            <h3 class="font-bold text-gray-700">Pusat Unduhan Materi</h3>
+            <div class="space-y-3">
+                <div class="glass-card p-4 flex items-center gap-4 download-item transition-all">
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800 leading-tight">Panduan Puasa Ramadhan</h4>
+                        <p class="text-[10px] text-gray-500">PDF • 1.2 MB</p>
+                    </div>
+                    <a href="#" class="bg-emerald-50 text-emerald-600 p-2 rounded-lg"><i class="fas fa-download"></i></a>
+                </div>
+
+                <div class="glass-card p-4 flex items-center gap-4 download-item transition-all">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800 leading-tight">Materi Fiqih Shalat</h4>
+                        <p class="text-[10px] text-gray-500">PDF • 2.5 MB</p>
+                    </div>
+                    <a href="#" class="bg-emerald-50 text-emerald-600 p-2 rounded-lg"><i class="fas fa-download"></i></a>
+                </div>
+
+                <div class="glass-card p-4 flex items-center gap-4 download-item transition-all">
+                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-gray-800 leading-tight">Dzikir Pagi & Petang</h4>
+                        <p class="text-[10px] text-gray-500">DOCX • 800 KB</p>
+                    </div>
+                    <a href="#" class="bg-emerald-50 text-emerald-600 p-2 rounded-lg"><i class="fas fa-download"></i></a>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-100 p-4 rounded-2xl flex items-center gap-3">
+                    <i class="fas fa-info-circle text-yellow-600"></i>
+                    <p class="text-[10px] text-yellow-800 leading-tight">Gunakan koneksi Wi-Fi sekolah untuk mengunduh materi agar lebih cepat.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Statistik Progres -->
+        <div id="content-stats" class="hidden space-y-4 text-center">
+            <h3 class="font-bold text-gray-700">Statistik Ibadah</h3>
+            <div class="glass-card p-6">
+                <div class="relative inline-flex items-center justify-center">
+                    <svg class="w-32 h-32 -rotate-90">
+                        <circle cx="64" cy="64" r="58" stroke="#f1f5f9" stroke-width="8" fill="transparent" />
+                        <circle id="stat-circle" cx="64" cy="64" r="58" stroke="#059669" stroke-width="8" fill="transparent" stroke-dasharray="364.4" stroke-dashoffset="364.4" stroke-linecap="round" />
+                    </svg>
+                    <span id="stat-percent" class="absolute text-2xl font-bold text-emerald-700">0%</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-4 font-medium">Keseluruhan Amalan</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Shalat Terisi</p>
+                    <p id="stat-prayers" class="text-xl font-bold text-gray-800">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Catatan Materi</p>
+                    <p id="stat-journals" class="text-xl font-bold text-gray-800">0</p>
+                </div>
+            </div>
+            <button onclick="exportData()" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold mt-2 shadow-lg">
+                <i class="fas fa-share-square mr-2"></i> Kirim Laporan
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Modal Profil -->
+    <div id="profile-modal" class="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center hidden p-6 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl">
+            <h3 class="font-bold text-lg text-gray-800 mb-4 text-center">Edit Identitas</h3>
+            <div class="space-y-4">
+                <input type="text" id="input-name" placeholder="Nama Lengkap" class="w-full p-3 border rounded-xl bg-gray-50 outline-none text-sm">
+                <input type="text" id="input-class" placeholder="Kelas (misal: X-7)" class="w-full p-3 border rounded-xl bg-gray-50 outline-none text-sm">
+                <div class="flex gap-2 pt-2">
+                    <button onclick="toggleProfileModal()" class="flex-1 py-3 text-gray-500 font-bold text-sm">Batal</button>
+                    <button onclick="saveProfile()" class="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-md">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="msg-box" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2 rounded-full text-[10px] shadow-2xl transition-all opacity-0 pointer-events-none z-[100]">
+        Data Berhasil Disimpan
+    </div>
+
+    <script>
+        const scheduleData = {
+            1: [
+                { time: "07:00 - 07:30", title: "Pembukaan & Dhuha", desc: "Masjid SMAN 1 Babat", icon: "fas fa-bullhorn", color: "bg-emerald-600" },
+                { time: "07:30 - 09:00", title: "Materi Sesi 1", desc: "Fiqih Ramadhan", icon: "fas fa-book", color: "bg-blue-500" },
+                { time: "09:00 - 09:30", title: "Istirahat", desc: "Halaman Sekolah", icon: "fas fa-utensils", color: "bg-orange-400" },
+                { time: "09:30 - 11:30", title: "Tadarus Terbimbing", desc: "Kelas Masing-masing", icon: "fas fa-quran", color: "bg-purple-500" }
+            ],
+            2: [
+                { time: "07:00 - 08:30", title: "Dhuha & Zikir", desc: "Masjid Sekolah", icon: "fas fa-pray", color: "bg-emerald-600" },
+                { time: "08:30 - 10:00", title: "Materi Sesi 2", desc: "Adab dan Akhlak", icon: "fas fa-user-check", color: "bg-blue-500" },
+                { time: "10:00 - 11:30", title: "Kuis Keagamaan", desc: "Aula Sekolah", icon: "fas fa-puzzle-piece", color: "bg-orange-400" }
+            ],
+            3: [
+                { time: "07:00 - 09:00", title: "Praktik Ibadah", desc: "Masjid Sekolah", icon: "fas fa-hand-holding-heart", color: "bg-emerald-600" },
+                { time: "09:00 - 11:00", title: "Motivasi Remaja", desc: "Kisah Sahabat Nabi", icon: "fas fa-star", color: "bg-blue-500" },
+                { time: "11:00 - 12:30", title: "Penutupan & Zakat", desc: "Pembagian Sembako", icon: "fas fa-hands-helping", color: "bg-purple-500" }
+            ]
+        };
+
+        let appData = {
+            profile: { name: 'Siswa SMAN 1 Babat', class: '-' },
+            daily: {}, 
+            journals: [],
+            tadarus: {}
+        };
+
+        const today = new Date().toISOString().split('T')[0];
+
+        window.onload = () => {
+            loadFromStorage();
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            switchDaySchedule(1);
+            renderJournal();
+            updateStats();
+            updateCheckUI();
+        };
+
+        function switchTab(tab) {
+            ['daily', 'schedule', 'journal', 'download', 'stats'].forEach(t => {
+                document.getElementById(`content-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).classList.remove('tab-active');
+                document.getElementById(`tab-${t}`).classList.add('text-gray-400');
+            });
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+            document.getElementById(`tab-${tab}`).classList.remove('text-gray-400');
+        }
+
+        function switchDaySchedule(day) {
+            [1, 2, 3].forEach(d => {
+                const b = document.getElementById(`btn-day-${d}`);
+                b.classList.remove('day-tab-active'); b.classList.add('text-gray-400');
+            });
+            document.getElementById(`btn-day-${day}`).classList.add('day-tab-active');
+            document.getElementById(`btn-day-${day}`).classList.remove('text-gray-400');
+
+            const container = document.getElementById('schedule-container');
+            container.innerHTML = "";
+            scheduleData[day].forEach(item => {
+                container.innerHTML += `
+                    <div class="relative z-10 flex gap-4">
+                        <div class="w-10 h-10 ${item.color} rounded-full flex items-center justify-center text-white shadow-md">
+                            <i class="${item.icon} text-xs"></i>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm flex-1 border border-gray-100">
+                            <span class="text-[9px] font-bold text-gray-400 block mb-1 uppercase">${item.time}</span>
+                            <h4 class="font-bold text-xs text-gray-800">${item.title}</h4>
+                            <p class="text-[10px] text-gray-500 mt-1">${item.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleProfileModal() { document.getElementById('profile-modal').classList.toggle('hidden'); }
+
+        function saveProfile() {
+            const n = document.getElementById('input-name').value;
+            const c = document.getElementById('input-class').value;
+            if(!n || !c) return showMessage("Mohon lengkapi profil!");
+            appData.profile = { name: n, class: c };
+            updateProfileUI(); saveToStorage(); toggleProfileModal(); showMessage("Profil Diperbarui!");
+        }
+
+        function updateProfileUI() {
+            document.getElementById('display-name').innerText = appData.profile.name;
+            document.getElementById('display-class').innerText = appData.profile.class;
+            document.getElementById('input-name').value = appData.profile.name;
+            document.getElementById('input-class').value = appData.profile.class;
+        }
+
+        function toggleCheck(prayer) {
+            if (!appData.daily[today]) appData.daily[today] = {};
+            appData.daily[today][prayer] = !appData.daily[today][prayer];
+            updateCheckUI(); saveToStorage(); updateStats();
+        }
+
+        function updateCheckUI() {
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha', 'tarawih'];
+            const dayData = appData.daily[today] || {};
+            prayers.forEach(p => {
+                const el = document.getElementById(`check-${p}`);
+                if (dayData[p]) {
+                    el.classList.add('bg-emerald-50', 'border-emerald-500');
+                    el.querySelector('span').classList.add('text-emerald-800', 'font-bold');
+                } else {
+                    el.classList.remove('bg-emerald-50', 'border-emerald-500');
+                    el.querySelector('span').classList.remove('text-emerald-800', 'font-bold');
+                }
+            });
+            document.getElementById('tadarus-log').innerText = appData.tadarus[today] ? `Tercatat: ${appData.tadarus[today]}` : "";
+        }
+
+        function saveTadarus() {
+            const v = document.getElementById('tadarus-input').value;
+            if(v) { appData.tadarus[today] = v; saveToStorage(); updateCheckUI(); showMessage("Tadarus disimpan!"); }
+        }
+
+        function saveJournalEntry() {
+            const t = document.getElementById('materi-title').value;
+            const s = document.getElementById('materi-speaker').value;
+            const n = document.getElementById('materi-notes').value;
+            if (!t || !n) return showMessage("Lengkapi judul & poin!");
+            appData.journals.unshift({ date: new Date().toLocaleDateString('id-ID'), title: t, speaker: s, notes: n });
+            saveToStorage(); renderJournal(); updateStats();
+            document.getElementById('materi-title').value = ""; document.getElementById('materi-notes').value = "";
+            showMessage("Jurnal Materi Tersimpan!");
+        }
+
+        function renderJournal() {
+            const container = document.getElementById('journal-list');
+            container.innerHTML = appData.journals.length ? "" : "<p class='text-center text-gray-400 text-[10px] py-10 italic'>Belum ada catatan materi.</p>";
+            appData.journals.forEach((item, i) => {
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 relative">
+                        <span class="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">${item.date}</span>
+                        <h4 class="font-bold text-xs text-gray-800 mt-2">${item.title}</h4>
+                        <p class="text-[9px] text-gray-400">Oleh: ${item.speaker || 'Umum'}</p>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed italic border-t pt-2 border-dashed">"${item.notes}"</p>
+                        <button onclick="deleteJournal(${i})" class="absolute top-4 right-4 text-gray-300"><i class="fas fa-trash-alt text-[10px]"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteJournal(i) { appData.journals.splice(i, 1); saveToStorage(); renderJournal(); updateStats(); }
+
+        function updateStats() {
+            let count = 0; Object.values(appData.daily).forEach(d => { Object.values(d).forEach(v => { if(v) count++; }); });
+            document.getElementById('stat-prayers').innerText = count;
+            document.getElementById('stat-journals').innerText = appData.journals.length;
+            const perc = Math.min(Math.round((count / 180) * 100), 100);
+            document.getElementById('stat-percent').innerText = `${perc}%`;
+            document.getElementById('stat-circle').setAttribute('stroke-dashoffset', 364.4 - (perc / 100) * 364.4);
+        }
+
+        function showMessage(msg) {
+            const b = document.getElementById('msg-box'); b.innerText = msg; b.style.opacity = '1';
+            setTimeout(() => b.style.opacity = '0', 2000);
+        }
+
+        function saveToStorage() { localStorage.setItem('sman1_ramadhan_v3', JSON.stringify(appData)); }
+        function loadFromStorage() {
+            const s = localStorage.getItem('sman1_ramadhan_v3');
+            if (s) { appData = JSON.parse(s); updateProfileUI(); }
+        }
+
+        function exportData() {
+            const s = JSON.stringify(appData, null, 2);
+            const blob = new Blob([s], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url;
+            a.download = `Jurnal_Ramadhan_${appData.profile.name}.json`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
+
